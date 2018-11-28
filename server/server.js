@@ -6,6 +6,7 @@ const config        = require('./config/config')
 const session       = require("express-session");
 const passport      = require('passport')
 const LocalStrategy = require('passport-local').Strategy;
+const bcrypt        = require('bcrypt');
 
 const app = express();
 
@@ -40,10 +41,12 @@ passport.use(new LocalStrategy(
         if (!user) {
           return done(null, false, { message: 'Incorrect username.' });
         }
-        if (user.password !== password) {
-          return done(null, false, { message: 'Incorrect password.' });
-        }
-        return done(null, user);
+        let match = bcrypt.compare(password, user.password).then((match) => {
+            if (!match) {
+                return done(null, false, { message: 'Incorrect password.' });
+            }
+            return done(null, user);
+        })
       });
     }
 ));

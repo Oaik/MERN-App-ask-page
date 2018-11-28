@@ -1,4 +1,5 @@
 module.exports = {
     mongodURI: "mongodb://localhost/ask",
-    secret: "sha123"
+    saltSecret: "topsecret",
+    saltRound: 10
 }

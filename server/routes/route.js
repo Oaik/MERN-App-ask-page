@@ -16,13 +16,25 @@ router.route('/register')
         res.send("Register Page")
     })
     .post((req, res) => {
-        let body = req.body;
-        let newUser = new User(body);
-        newUser.save().then(() => {
-            console.log("User Saved!!!")
-        }).catch((err) => {
-            res.send(`Error: ${err}`)
-        })
+        let userInfo = req.body;
+        User.findOne({username: userInfo.username}, (err, user) => {
+            if (err) return res.send(err)
+            if (user) return res.status(404).send("this user already registerted")
+            bcrypt.hash(req.body.password, config.saltRound, (err, hash) => {
+                if(err) return console.log(err)
+                userInfo.password = hash;
+                let newUser = new User(userInfo);
+                newUser.save().then(() => {
+                    console.log("User Saved!!!")
+                    req.login(newUser, (err) => {
+                        if (err) return console.log(err);
+                        res.redirect("/")
+                    });
+                }).catch((err) => {
+                    res.send(`Error: ${err}`)
+                })
+            })
+        })    
     })
 
 router.route("/login")
