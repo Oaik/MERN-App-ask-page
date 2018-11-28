@@ -1,0 +1,12 @@
+html
+  head
+    title= title
+  body
+    h1= message
+    if(user)
+      p Welcome #{user.username}
+      p want to log out ?
+      a(href="/logout") logout
+    else
+      p Welcome Back Please login
+      a(href="/login") Login
